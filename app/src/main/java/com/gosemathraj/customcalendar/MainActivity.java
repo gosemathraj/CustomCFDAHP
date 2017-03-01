@@ -10,6 +10,9 @@ import android.widget.Toast;
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
+import com.gosemathraj.customcalendar.Utils.SharedPref;
+import com.gosemathraj.customcalendar.model.Events;
+import com.gosemathraj.customcalendar.realm.RealmController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,6 +20,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
+import io.realm.RealmResults;
 
 import static android.R.id.empty;
 
@@ -26,8 +31,10 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
     @BindView(R.id.weekView)
     WeekView weekView;
 
-    private List<WeekViewEvent> weekViewEvents;
+
     private WeekViewEvent weekViewEvent;
+    private List<WeekViewEvent> weekViewEvents;
+
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
     }
 
     private void setEventData() {
-        Calendar startTime = Calendar.getInstance();
+        /*Calendar startTime = Calendar.getInstance();
         startTime.set(Calendar.HOUR_OF_DAY,1);
         startTime.set(Calendar.MINUTE,30);
         startTime.set(Calendar.DAY_OF_MONTH,4);
@@ -98,7 +105,33 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
         endTime.set(Calendar.YEAR,2017);
 
         weekViewEvent = new WeekViewEvent(2,"Next month event added",startTime,endTime);
-        weekViewEvents.add(weekViewEvent);
+        weekViewEvents.add(weekViewEvent);*/
+
+        RealmResults<Events> eventsList = RealmController.getInstance().getAllAppointments();
+        for(int i = 0;i < eventsList.size();i++){
+            WeekViewEvent we = new WeekViewEvent();
+            we.setId(eventsList.get(i).getId());
+            we.setName(eventsList.get(i).getEventName());
+
+            Calendar s = Calendar.getInstance();
+            s.set(Calendar.DAY_OF_MONTH,eventsList.get(i).getStartDay());
+            s.set(Calendar.MONTH,eventsList.get(i).getStartMonth());
+            s.set(Calendar.YEAR,eventsList.get(i).getStartYear());
+            s.set(Calendar.HOUR_OF_DAY,eventsList.get(i).getStartHour());
+            s.set(Calendar.MINUTE,eventsList.get(i).getStartMinute());
+
+            Calendar e = Calendar.getInstance();
+            e.set(Calendar.DAY_OF_MONTH,eventsList.get(i).getEndDay());
+            e.set(Calendar.MONTH,eventsList.get(i).getEndMonth());
+            e.set(Calendar.YEAR,eventsList.get(i).getEndYear());
+            e.set(Calendar.HOUR_OF_DAY,eventsList.get(i).getEndHour());
+            e.set(Calendar.MINUTE,eventsList.get(i).getEndMinute());
+
+            we.setStartTime(s);
+            we.setEndTime(e);
+
+            weekViewEvents.add(we);
+        }
     }
 
     private void setListeners() {
@@ -153,6 +186,32 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
                 WeekViewEvent newEvent = new WeekViewEvent(10,eventName,startTime,endTime);
                 weekViewEvents.add(newEvent);
                 weekView.notifyDatasetChanged();
+
+                int count = SharedPref.getInstance(this).getCount();
+                Events events = new Events();
+                if(count == -1){
+                    events.setId(0);
+                }else{
+                    events.setId(count + 1);
+                }
+                events.setEventName(eventName);
+
+                events.setStartDay(startTime.get(Calendar.DAY_OF_MONTH));
+                events.setStartMonth(startTime.get(Calendar.MONTH));
+                events.setStartYear(startTime.get(Calendar.YEAR));
+                events.setStartHour(startTime.get(Calendar.HOUR_OF_DAY));
+                events.setStartMinute(startTime.get(Calendar.MINUTE));
+
+
+                events.setEndDay(endTime.get(Calendar.DAY_OF_MONTH));
+                events.setEndMonth(endTime.get(Calendar.MONTH));
+                events.setEndYear(endTime.get(Calendar.YEAR));
+                events.setEndHour(endTime.get(Calendar.HOUR_OF_DAY));
+                events.setEndMinute(endTime.get(Calendar.MINUTE));
+
+                RealmController.getInstance().addAppointment(events);
+                SharedPref.getInstance(this).setCount(count + 1);
+
             }
         }
     }
