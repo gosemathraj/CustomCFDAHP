@@ -75,14 +75,36 @@
         android:layout_marginTop="16dp">
 
         <TextView
-            android:id="@+id/selectDate"
+            android:id="@+id/selectStartDate"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="Select date"/>
+            android:text="Select start date"/>
 
         <TextView
-            android:id="@+id/date"
+            android:id="@+id/startDate"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="01/03/2017"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/selectEndDate"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Select start date"/>
+
+        <TextView
+            android:id="@+id/endDate"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"

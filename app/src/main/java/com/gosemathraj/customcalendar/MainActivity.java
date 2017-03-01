@@ -133,7 +133,27 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     @Override
     public void onEmptyViewClicked(Calendar time) {
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("time",time);
+
         Intent intent = new Intent(this,AddEventActivity.class);
+        intent.putExtras(bundle);
         startActivityForResult(intent,1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 1){
+            if(data != null){
+
+                Calendar startTime = (Calendar) data.getExtras().getSerializable("startCalendar");
+                Calendar endTime = (Calendar) data.getExtras().getSerializable("endCalendar");
+                String eventName = data.getExtras().getString("eventName");
+
+                WeekViewEvent newEvent = new WeekViewEvent(10,eventName,startTime,endTime);
+                weekViewEvents.add(newEvent);
+                weekView.notifyDatasetChanged();
+            }
+        }
     }
 }
