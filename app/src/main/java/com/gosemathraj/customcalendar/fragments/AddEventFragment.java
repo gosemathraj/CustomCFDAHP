@@ -71,6 +71,7 @@ public class AddEventFragment extends Fragment{
     @BindView(R.id.addEvent)
     Button addEvent;
 
+    private String am_or_pm;
     private Calendar time;
     private Calendar newStartTime = Calendar.getInstance();
     private Calendar newEndTime = Calendar.getInstance();
@@ -129,6 +130,9 @@ public class AddEventFragment extends Fragment{
                         newStartTime.set(Calendar.DAY_OF_MONTH,day);
                         newStartTime.set(Calendar.MONTH,month);
                         newStartTime.set(Calendar.YEAR,year);
+
+
+                        startDate.setText(String.valueOf(day) + "/" + String.valueOf(month) + "/" + String.valueOf(year));
                     }
                 },calendar.get(calendar.YEAR), calendar.get(calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
@@ -145,6 +149,8 @@ public class AddEventFragment extends Fragment{
                         newEndTime.set(Calendar.DAY_OF_MONTH,day);
                         newEndTime.set(Calendar.MONTH,month);
                         newEndTime.set(Calendar.YEAR,year);
+
+                        endDate.setText(String.valueOf(day) + "/" + String.valueOf(month) + "/" + String.valueOf(year));
                     }
                 },calendar.get(calendar.YEAR), calendar.get(calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
@@ -159,6 +165,8 @@ public class AddEventFragment extends Fragment{
                     public void onTimeSet(TimePicker timePicker, int hour, int minutes) {
                         newStartTime.set(Calendar.HOUR_OF_DAY,hour);
                         newStartTime.set(Calendar.MINUTE,minutes);
+
+                        startTime.setText(String.valueOf(hour) + ":" + String.valueOf(minutes));
                     }
                 },time.get(Calendar.HOUR_OF_DAY),time.get(Calendar.MINUTE),false);
                 timePickerDialog.show();
@@ -173,6 +181,8 @@ public class AddEventFragment extends Fragment{
                     public void onTimeSet(TimePicker timePicker, int hour, int minutes) {
                         newEndTime.set(Calendar.HOUR_OF_DAY,hour);
                         newEndTime.set(Calendar.MINUTE,minutes);
+
+                        endTime.setText(String.valueOf(hour) + ":" + String.valueOf(minutes));
                     }
                 },time.get(Calendar.HOUR_OF_DAY) + 1,time.get(Calendar.MINUTE),false);
                 timePickerDialog.show();
@@ -202,7 +212,22 @@ public class AddEventFragment extends Fragment{
     }
 
     private void setInitialData() {
+        startDate.setText(String.valueOf(time.get(Calendar.DAY_OF_MONTH)) + "/" + String.valueOf(time.get(Calendar.MONTH)) + "/" + String.valueOf(time.get(Calendar.YEAR)));
+        endDate.setText(String.valueOf(time.get(Calendar.DAY_OF_MONTH)) + "/" + String.valueOf(time.get(Calendar.MONTH)) + "/" + String.valueOf(time.get(Calendar.YEAR)));
         startTime.setText(String.valueOf(time.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(time.get(Calendar.MINUTE)));
+        endTime.setText(String.valueOf(time.get(Calendar.HOUR_OF_DAY) + 1) + ":" + String.valueOf(time.get(Calendar.MINUTE)));
+
+        newStartTime.set(Calendar.DAY_OF_MONTH,time.get(Calendar.DAY_OF_MONTH));
+        newStartTime.set(Calendar.MONTH,time.get(Calendar.MONTH));
+        newStartTime.set(Calendar.YEAR,time.get(Calendar.YEAR));
+        newStartTime.set(Calendar.HOUR_OF_DAY,time.get(Calendar.HOUR_OF_DAY));
+        newStartTime.set(Calendar.MINUTE,time.get(Calendar.MINUTE));
+
+        newEndTime.set(Calendar.DAY_OF_MONTH,time.get(Calendar.DAY_OF_MONTH));
+        newEndTime.set(Calendar.MONTH,time.get(Calendar.MONTH));
+        newEndTime.set(Calendar.YEAR,time.get(Calendar.YEAR));
+        newEndTime.set(Calendar.HOUR_OF_DAY,time.get(Calendar.HOUR_OF_DAY) + 1);
+        newEndTime.set(Calendar.MINUTE,time.get(Calendar.MINUTE));
     }
 
     private void getIntentData() {

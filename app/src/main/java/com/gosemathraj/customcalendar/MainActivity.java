@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
     @BindView(R.id.weekView)
     WeekView weekView;
 
-
     private WeekViewEvent weekViewEvent;
     private List<WeekViewEvent> weekViewEvents;
 
@@ -161,6 +160,30 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
+        Events e = new Events();
+        e.setId(event.getId());
+        e.setEventName(event.getName());
+
+        e.setStartDay(event.getStartTime().get(Calendar.DAY_OF_MONTH));
+        e.setStartMonth(event.getStartTime().get(Calendar.MONTH));
+        e.setStartYear(event.getStartTime().get(Calendar.YEAR));
+        e.setStartHour(event.getStartTime().get(Calendar.HOUR_OF_DAY));
+        e.setStartMinute(event.getStartTime().get(Calendar.MINUTE));
+
+        e.setEndDay(event.getEndTime().get(Calendar.DAY_OF_MONTH));
+        e.setEndMonth(event.getEndTime().get(Calendar.MONTH));
+        e.setEndYear(event.getEndTime().get(Calendar.YEAR));
+        e.setEndHour(event.getEndTime().get(Calendar.HOUR_OF_DAY));
+        e.setEndMinute(event.getEndTime().get(Calendar.MINUTE));
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("event",e);
+        bundle.putInt("fragmentId",2);
+
+        Intent intent = new Intent(this,AddEventActivity.class);
+        intent.putExtras(bundle);
+        startActivity(intent);
+
         Toast.makeText(this,"Event Clicked" + event.getStartTime(),Toast.LENGTH_SHORT).show();
     }
 
@@ -168,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
     public void onEmptyViewClicked(Calendar time) {
         Bundle bundle = new Bundle();
         bundle.putSerializable("time",time);
+        bundle.putInt("fragmentId",1);
 
         Intent intent = new Intent(this,AddEventActivity.class);
         intent.putExtras(bundle);

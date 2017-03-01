@@ -1,18 +1,17 @@
 package com.gosemathraj.customcalendar.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
-import static com.gosemathraj.customcalendar.R.id.endTime;
-
 /**
  * Created by RajeshG on 01-03-2017.
  */
 
-public class Events extends RealmObject{
+public class Events extends RealmObject implements Serializable{
 
     @PrimaryKey
     private long id;
