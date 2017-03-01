@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <Spinner
+        android:id="@+id/appointmentType"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/bg_box"
+        android:prompt="@string/selectAppointmentType"/>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="4dp"
+        android:background="@drawable/bg_box">
+
+        <EditText
+            android:id="@+id/patientName"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:padding="4dp"
+            android:hint="Patient Name"
+            android:inputType="text"
+            android:imeOptions="actionNext"
+            android:background="@null" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="4dp"
+        android:background="@drawable/bg_box">
+
+        <EditText
+            android:id="@+id/patientContactNo"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:hint="Mobile no"
+            android:padding="4dp"
+            android:inputType="number"
+            android:imeOptions="actionNext"
+            android:background="@null"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:padding="4dp"
+        android:background="@drawable/bg_box">
+
+        <EditText
+            android:id="@+id/patientEmail"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:padding="4dp"
+            android:hint="Patient Email"
+            android:inputType="text"
+            android:imeOptions="actionDone"
+            android:background="@null"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/selectDate"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Select date"/>
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="01/03/2017"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/selectStartTime"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Start time"/>
+
+        <TextView
+            android:id="@+id/startTime"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="03:30 PM"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/selectEndTime"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="End time"/>
+
+        <TextView
+            android:id="@+id/endTime"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="03:30 PM"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/addEvent"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:text="Add Event"
+        android:background="@drawable/bg_box"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

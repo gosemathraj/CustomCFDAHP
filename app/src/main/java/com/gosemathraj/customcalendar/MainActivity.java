@@ -1,5 +1,6 @@
 package com.gosemathraj.customcalendar;
 
+import android.content.Intent;
 import android.graphics.RectF;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
         Calendar endTime = Calendar.getInstance();
         endTime.set(Calendar.HOUR_OF_DAY,2);
         endTime.set(Calendar.MINUTE,45);
-        endTime.set(Calendar.DAY_OF_MONTH,4);
+        endTime.set(Calendar.DAY_OF_MONTH,5);
         endTime.set(Calendar.MONTH,2);
         endTime.set(Calendar.YEAR,2017);
 
@@ -132,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     @Override
     public void onEmptyViewClicked(Calendar time) {
-
+        Intent intent = new Intent(this,AddEventActivity.class);
+        startActivityForResult(intent,1);
     }
 }
