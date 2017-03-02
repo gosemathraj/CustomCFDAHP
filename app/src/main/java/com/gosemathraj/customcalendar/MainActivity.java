@@ -5,12 +5,16 @@ import android.graphics.RectF;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
-import com.gosemathraj.customcalendar.Utils.SharedPref;
+import com.gosemathraj.customcalendar.Utility.SharedPref;
 import com.gosemathraj.customcalendar.model.Events;
 import com.gosemathraj.customcalendar.realm.RealmController;
 
@@ -20,16 +24,22 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.Realm;
 import io.realm.RealmResults;
 
-import static android.R.id.empty;
+import static android.R.attr.data;
+import static com.gosemathraj.customcalendar.R.id.delete;
+import static com.gosemathraj.customcalendar.R.id.startTime;
 
 public class MainActivity extends AppCompatActivity implements MonthLoader.MonthChangeListener,WeekView.EventClickListener,
         WeekView.EmptyViewClickListener{
 
     @BindView(R.id.weekView)
     WeekView weekView;
+
+    private static final int TYPE_DAY_VIEW = 1;
+    private static final int TYPE_THREE_DAY_VIEW = 2;
+    private static final int TYPE_WEEK_VIEW = 3;
+    private int mWeekViewType = TYPE_THREE_DAY_VIEW;
 
     private WeekViewEvent weekViewEvent;
     private List<WeekViewEvent> weekViewEvents;
@@ -129,6 +139,12 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
             we.setStartTime(s);
             we.setEndTime(e);
 
+            if(eventsList.get(i).getEventName().split("--")[0].equals("Consultation")){
+                we.setColor(getResources().getColor(R.color.consultation_color));
+            }else{
+                we.setColor(getResources().getColor(R.color.followup_color));
+            }
+
             weekViewEvents.add(we);
         }
     }
@@ -200,14 +216,19 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 1){
-            if(data != null){
 
+        if(resultCode == 1 && data != null){
+            if(requestCode == 1){
                 Calendar startTime = (Calendar) data.getExtras().getSerializable("startCalendar");
                 Calendar endTime = (Calendar) data.getExtras().getSerializable("endCalendar");
                 String eventName = data.getExtras().getString("eventName");
 
                 WeekViewEvent newEvent = new WeekViewEvent(10,eventName,startTime,endTime);
+                if(eventName.split("--")[0].equals("Consultation")){
+                    newEvent.setColor(getResources().getColor(R.color.consultation_color));
+                }else{
+                    newEvent.setColor(getResources().getColor(R.color.followup_color));
+                }
                 weekViewEvents.add(newEvent);
                 weekView.notifyDatasetChanged();
 
@@ -235,8 +256,65 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
                 RealmController.getInstance().addAppointment(events);
                 SharedPref.getInstance(this).setCount(count + 1);
-
             }
+        }else if(resultCode == 2){
+            Events e = (Events) data.getExtras().getSerializable("deleteEvent");
+            for(int i = 0;i < weekViewEvents.size();i++){
+                if(weekViewEvents.get(i).getId() == e.getId()){
+                    weekViewEvents.remove(i);
+                }
+            }
+            weekView.notifyDatasetChanged();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch(id){
+            case R.id.action_today:
+                weekView.goToToday();
+                return true;
+            case R.id.action_day_view:
+                if (mWeekViewType != TYPE_DAY_VIEW) {
+                    item.setChecked(!item.isChecked());
+                    mWeekViewType = TYPE_DAY_VIEW;
+                    weekView.setNumberOfVisibleDays(1);
+
+                    weekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
+                    weekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                    weekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                }
+                return true;
+            case R.id.action_three_day_view:
+                if (mWeekViewType != TYPE_THREE_DAY_VIEW) {
+                    item.setChecked(!item.isChecked());
+                    mWeekViewType = TYPE_THREE_DAY_VIEW;
+                    weekView.setNumberOfVisibleDays(3);
+
+                    weekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
+                    weekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                    weekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 12, getResources().getDisplayMetrics()));
+                }
+                return true;
+            case R.id.action_week_view:
+                if (mWeekViewType != TYPE_WEEK_VIEW) {
+                    item.setChecked(!item.isChecked());
+                    mWeekViewType = TYPE_WEEK_VIEW;
+                    weekView.setNumberOfVisibleDays(7);
+
+                    weekView.setColumnGap((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics()));
+                    weekView.setTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+                    weekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
+                }
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

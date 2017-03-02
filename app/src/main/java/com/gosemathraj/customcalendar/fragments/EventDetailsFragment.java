@@ -1,8 +1,10 @@
 package com.gosemathraj.customcalendar.fragments;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import com.gosemathraj.customcalendar.model.Events;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.internal.Utils;
 
 /**
  * Created by RajeshG on 01-03-2017.
@@ -45,6 +48,7 @@ public class EventDetailsFragment extends Fragment{
     TextView edit;
 
     private Events event;
+    private OnEventDelete onEventDelete;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -61,8 +65,37 @@ public class EventDetailsFragment extends Fragment{
     }
 
     private void init() {
+        onEventDelete = (OnEventDelete) getActivity();
         getIntentData();
+        setOnClickListener();
         setData();
+    }
+
+    private void setOnClickListener() {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog();
+            }
+        });
+    }
+
+    private void showDialog() {
+        AlertDialog dialog;
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Delete event ?");
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                onEventDelete.eventDelete(event);
+            }
+        });
+        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.dismiss();
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
     }
 
     private void setData() {
@@ -85,5 +118,9 @@ public class EventDetailsFragment extends Fragment{
         if(getActivity().getIntent().getExtras() != null){
             event = (Events) getActivity().getIntent().getExtras().getSerializable("event");
         }
+    }
+
+    public interface OnEventDelete{
+        void eventDelete(Events event);
     }
 }

@@ -1,4 +1,4 @@
-package com.gosemathraj.customcalendar.Utils;
+package com.gosemathraj.customcalendar.Utility;
 
 import android.content.Context;
 import android.content.SharedPreferences;
