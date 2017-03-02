@@ -5,6 +5,7 @@ import android.app.Application;
 import com.gosemathraj.customcalendar.model.Events;
 
 import io.realm.Realm;
+import io.realm.RealmQuery;
 import io.realm.RealmResults;
 
 /**
@@ -62,5 +63,16 @@ public class RealmController {
     public RealmResults<Events> getAllAppointments(){
         RealmResults<Events> events = realm.where(Events.class).findAll();
         return events;
+    }
+
+    public void deleteAppointment(long id){
+        realm.beginTransaction();
+
+        RealmResults<Events> results = realm.where(Events.class)
+                .equalTo("id", id)
+                .findAll();
+
+        results.deleteAllFromRealm();
+        realm.commitTransaction();
     }
 }

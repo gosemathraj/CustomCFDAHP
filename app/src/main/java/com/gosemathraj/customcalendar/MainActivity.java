@@ -1,5 +1,6 @@
 package com.gosemathraj.customcalendar;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.RectF;
 import android.support.v7.app.AppCompatActivity;
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
         Intent intent = new Intent(this,AddEventActivity.class);
         intent.putExtras(bundle);
-        startActivity(intent);
+        startActivityForResult(intent,1);
 
         Toast.makeText(this,"Event Clicked" + event.getStartTime(),Toast.LENGTH_SHORT).show();
     }
@@ -217,8 +218,8 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if(resultCode == 1 && data != null){
-            if(requestCode == 1){
+        if(requestCode == 1 &&  data != null){
+            if(resultCode == 1){
                 Calendar startTime = (Calendar) data.getExtras().getSerializable("startCalendar");
                 Calendar endTime = (Calendar) data.getExtras().getSerializable("endCalendar");
                 String eventName = data.getExtras().getString("eventName");
@@ -256,15 +257,17 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
                 RealmController.getInstance().addAppointment(events);
                 SharedPref.getInstance(this).setCount(count + 1);
-            }
-        }else if(resultCode == 2){
-            Events e = (Events) data.getExtras().getSerializable("deleteEvent");
-            for(int i = 0;i < weekViewEvents.size();i++){
-                if(weekViewEvents.get(i).getId() == e.getId()){
-                    weekViewEvents.remove(i);
+            }else if(resultCode == 2){
+                Events e = (Events) data.getExtras().getSerializable("deleteEvent");
+                for(int i = 0;i < weekViewEvents.size();i++){
+                    if(weekViewEvents.get(i).getId() == e.getId()){
+                        weekViewEvents.remove(i);
+                        break;
+                    }
                 }
+                weekView.notifyDatasetChanged();
+                RealmController.getInstance().deleteAppointment(e.getId());
             }
-            weekView.notifyDatasetChanged();
         }
     }
 

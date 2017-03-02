@@ -77,7 +77,7 @@ public class AddEventFragment extends Fragment{
     private Calendar newEndTime = Calendar.getInstance();
     private String appointmentTypeString = null;
 
-    private AddeventClicked addeventClicked;
+    private OnAddEventClicked onAddEventClicked;
 
     @Nullable
     @Override
@@ -94,7 +94,7 @@ public class AddEventFragment extends Fragment{
     }
 
     private void init() {
-        addeventClicked = (AddeventClicked) getActivity();
+        onAddEventClicked = (OnAddEventClicked) getActivity();
         getIntentData();
         initSpinnerData();
         setInitialData();
@@ -197,7 +197,7 @@ public class AddEventFragment extends Fragment{
                 bundle.putSerializable("endCalendar",newEndTime);
                 bundle.putString("eventName",buildEventString());
 
-                addeventClicked.onAddEventClicked(bundle);
+                onAddEventClicked.addEventClicked(bundle);
             }
         });
     }
@@ -236,7 +236,7 @@ public class AddEventFragment extends Fragment{
         }
     }
 
-    public interface AddeventClicked{
-        void onAddEventClicked(Bundle bundle);
+    public interface OnAddEventClicked{
+        void addEventClicked(Bundle bundle);
     }
 }

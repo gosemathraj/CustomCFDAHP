@@ -1,5 +1,6 @@
 package com.gosemathraj.customcalendar;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,13 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.gosemathraj.customcalendar.fragments.AddEventFragment;
 import com.gosemathraj.customcalendar.fragments.EventDetailsFragment;
-import com.gosemathraj.customcalendar.model.Events;
 
 /**
  * Created by RajeshG on 01-03-2017.
  */
-public class AddEventActivity extends AppCompatActivity implements AddEventFragment.AddeventClicked,
-        EventDetailsFragment.OnEventDelete{
+public class AddEventActivity extends AppCompatActivity implements AddEventFragment.OnAddEventClicked,
+        EventDetailsFragment.OnDeleteEventClicked{
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,7 +37,7 @@ public class AddEventActivity extends AppCompatActivity implements AddEventFragm
     }
 
     @Override
-    public void onAddEventClicked(Bundle bundle) {
+    public void addEventClicked(Bundle bundle) {
         Intent intent = new Intent(this,MainActivity.class);
         intent.putExtras(bundle);
         setResult(1,intent);
@@ -45,13 +45,10 @@ public class AddEventActivity extends AppCompatActivity implements AddEventFragm
     }
 
     @Override
-    public void eventDelete(Events event) {
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("deleteEvent",event);
-
-        Intent newIntent = new Intent(this,MainActivity.class);
-        newIntent.putExtras(bundle);
-        setResult(2,newIntent);
+    public void deleteEventClicked(Bundle bundle) {
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.putExtras(bundle);
+        setResult(2,intent);
         finish();
     }
 }

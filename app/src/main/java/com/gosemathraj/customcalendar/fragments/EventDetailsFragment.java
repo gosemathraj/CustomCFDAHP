@@ -48,7 +48,7 @@ public class EventDetailsFragment extends Fragment{
     TextView edit;
 
     private Events event;
-    private OnEventDelete onEventDelete;
+    private OnDeleteEventClicked onDeleteEventClicked;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class EventDetailsFragment extends Fragment{
     }
 
     private void init() {
-        onEventDelete = (OnEventDelete) getActivity();
+        onDeleteEventClicked = (OnDeleteEventClicked) getActivity();
         getIntentData();
         setOnClickListener();
         setData();
@@ -86,7 +86,9 @@ public class EventDetailsFragment extends Fragment{
         builder.setMessage("Delete event ?");
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                onEventDelete.eventDelete(event);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("deleteEvent",event);
+                onDeleteEventClicked.deleteEventClicked(bundle);
             }
         });
         builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -120,7 +122,7 @@ public class EventDetailsFragment extends Fragment{
         }
     }
 
-    public interface OnEventDelete{
-        void eventDelete(Events event);
+    public interface OnDeleteEventClicked{
+        void deleteEventClicked(Bundle bundle);
     }
 }

@@ -15,7 +15,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Realm.init(getApplicationContext()                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          );
+        Realm.init(getApplicationContext());
         RealmConfiguration realmConfiguration = new Builder()
                                                 .name("appointmentRealm")
                                                 .schemaVersion(0)
