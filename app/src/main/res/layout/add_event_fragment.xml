@@ -164,4 +164,13 @@
         android:background="@drawable/bg_box"
         android:layout_marginTop="16dp"/>
 
+    <Button
+        android:id="@+id/updateEvent"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:text="Update event"
+        android:background="@drawable/bg_box"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"/>
+
 </LinearLayout>

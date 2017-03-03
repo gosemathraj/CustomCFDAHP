@@ -15,7 +15,6 @@ import com.gosemathraj.customcalendar.model.Events;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.internal.Utils;
 
 /**
  * Created by RajeshG on 01-03-2017.
@@ -76,6 +75,19 @@ public class EventDetailsFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 showDialog();
+            }
+        });
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("editEvent",event);
+                AddEventFragment frag = new AddEventFragment();
+                frag.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frame_base_container,frag).commit();
             }
         });
     }

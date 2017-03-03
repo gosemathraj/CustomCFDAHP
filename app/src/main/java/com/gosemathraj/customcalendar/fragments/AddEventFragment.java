@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.gosemathraj.customcalendar.R;
+import com.gosemathraj.customcalendar.model.Events;
 
 import java.util.Calendar;
 
@@ -71,13 +72,15 @@ public class AddEventFragment extends Fragment{
     @BindView(R.id.addEvent)
     Button addEvent;
 
+    @BindView(R.id.updateEvent)
+    Button updateEvent;
+
     private String am_or_pm;
-    private Calendar time;
-    private Calendar newStartTime = Calendar.getInstance();
-    private Calendar newEndTime = Calendar.getInstance();
+    private Events event;
     private String appointmentTypeString = null;
 
     private OnAddEventClicked onAddEventClicked;
+    private OnUpdateEventClicked onUpdateEventClicked;
 
     @Nullable
     @Override
@@ -95,6 +98,7 @@ public class AddEventFragment extends Fragment{
 
     private void init() {
         onAddEventClicked = (OnAddEventClicked) getActivity();
+        onUpdateEventClicked = (OnUpdateEventClicked) getActivity();
         getIntentData();
         initSpinnerData();
         setInitialData();
@@ -123,18 +127,16 @@ public class AddEventFragment extends Fragment{
         selectStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        newStartTime.set(Calendar.DAY_OF_MONTH,day);
-                        newStartTime.set(Calendar.MONTH,month);
-                        newStartTime.set(Calendar.YEAR,year);
-
+                        event.setStartDay(day);
+                        event.setStartMonth(month);
+                        event.setStartYear(year);
 
                         startDate.setText(String.valueOf(day) + "/" + String.valueOf(month) + "/" + String.valueOf(year));
                     }
-                },calendar.get(calendar.YEAR), calendar.get(calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH));
+                },event.getStartYear(), event.getStartMonth(), event.getStartDay());
                 datePickerDialog.show();
             }
         });
@@ -142,17 +144,16 @@ public class AddEventFragment extends Fragment{
         selectEndDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Calendar calendar = Calendar.getInstance();
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        newEndTime.set(Calendar.DAY_OF_MONTH,day);
-                        newEndTime.set(Calendar.MONTH,month);
-                        newEndTime.set(Calendar.YEAR,year);
+                        event.setEndDay(day);
+                        event.setEndMonth(month);
+                        event.setEndYear(year);
 
                         endDate.setText(String.valueOf(day) + "/" + String.valueOf(month) + "/" + String.valueOf(year));
                     }
-                },calendar.get(calendar.YEAR), calendar.get(calendar.MONTH), calendar.get(calendar.DAY_OF_MONTH));
+                },event.getEndYear(), event.getEndMonth(), event.getEndDay());
                 datePickerDialog.show();
             }
         });
@@ -163,12 +164,12 @@ public class AddEventFragment extends Fragment{
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hour, int minutes) {
-                        newStartTime.set(Calendar.HOUR_OF_DAY,hour);
-                        newStartTime.set(Calendar.MINUTE,minutes);
+                        event.setStartHour(hour);
+                        event.setStartMinute(minutes);
 
                         startTime.setText(String.valueOf(hour) + ":" + String.valueOf(minutes));
                     }
-                },time.get(Calendar.HOUR_OF_DAY),time.get(Calendar.MINUTE),false);
+                },event.getStartHour(),event.getStartMinute(),false);
                 timePickerDialog.show();
             }
         });
@@ -179,12 +180,12 @@ public class AddEventFragment extends Fragment{
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hour, int minutes) {
-                        newEndTime.set(Calendar.HOUR_OF_DAY,hour);
-                        newEndTime.set(Calendar.MINUTE,minutes);
+                        event.setEndHour(hour);
+                        event.setEndMinute(minutes);
 
                         endTime.setText(String.valueOf(hour) + ":" + String.valueOf(minutes));
                     }
-                },time.get(Calendar.HOUR_OF_DAY) + 1,time.get(Calendar.MINUTE),false);
+                },event.getEndHour(),event.getEndMinute(),false);
                 timePickerDialog.show();
             }
         });
@@ -192,12 +193,22 @@ public class AddEventFragment extends Fragment{
         addEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("startCalendar",newStartTime);
-                bundle.putSerializable("endCalendar",newEndTime);
-                bundle.putString("eventName",buildEventString());
 
+                event.setEventName(buildEventString());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("addEvent",event);
                 onAddEventClicked.addEventClicked(bundle);
+            }
+        });
+
+        updateEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                event.setEventName(buildEventString());
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("updateEvent",event);
+                onUpdateEventClicked.updateEventClicked(bundle);
             }
         });
     }
@@ -212,12 +223,19 @@ public class AddEventFragment extends Fragment{
     }
 
     private void setInitialData() {
-        startDate.setText(String.valueOf(time.get(Calendar.DAY_OF_MONTH)) + "/" + String.valueOf(time.get(Calendar.MONTH)) + "/" + String.valueOf(time.get(Calendar.YEAR)));
-        endDate.setText(String.valueOf(time.get(Calendar.DAY_OF_MONTH)) + "/" + String.valueOf(time.get(Calendar.MONTH)) + "/" + String.valueOf(time.get(Calendar.YEAR)));
-        startTime.setText(String.valueOf(time.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(time.get(Calendar.MINUTE)));
-        endTime.setText(String.valueOf(time.get(Calendar.HOUR_OF_DAY) + 1) + ":" + String.valueOf(time.get(Calendar.MINUTE)));
+        startDate.setText(String.valueOf(event.getStartDay()) + "/" + String.valueOf(event.getStartMonth()) + "/" + String.valueOf(event.getStartYear()));
+        endDate.setText(String.valueOf(event.getEndDay()) + "/" + String.valueOf(event.getEndMonth()) + "/" + String.valueOf(event.getEndYear()));
+        startTime.setText(String.valueOf(event.getStartHour() + ":" + String.valueOf(event.getStartMinute())));
+        endTime.setText(String.valueOf(event.getEndHour() + ":" + String.valueOf(event.getEndMinute())));
 
-        newStartTime.set(Calendar.DAY_OF_MONTH,time.get(Calendar.DAY_OF_MONTH));
+        if(event.getEventName().length() > 0){
+            appointmentTypeString = event.getEventName().split("--")[0];
+            patientName.setText(event.getEventName().split("--")[1]);
+            patientEmail.setText(event.getEventName().split("--")[2]);
+            patientContact.setText(event.getEventName().split("--")[3]);
+        }
+
+        /*newStartTime.set(Calendar.DAY_OF_MONTH,time.get(Calendar.DAY_OF_MONTH));
         newStartTime.set(Calendar.MONTH,time.get(Calendar.MONTH));
         newStartTime.set(Calendar.YEAR,time.get(Calendar.YEAR));
         newStartTime.set(Calendar.HOUR_OF_DAY,time.get(Calendar.HOUR_OF_DAY));
@@ -227,16 +245,27 @@ public class AddEventFragment extends Fragment{
         newEndTime.set(Calendar.MONTH,time.get(Calendar.MONTH));
         newEndTime.set(Calendar.YEAR,time.get(Calendar.YEAR));
         newEndTime.set(Calendar.HOUR_OF_DAY,time.get(Calendar.HOUR_OF_DAY) + 1);
-        newEndTime.set(Calendar.MINUTE,time.get(Calendar.MINUTE));
+        newEndTime.set(Calendar.MINUTE,time.get(Calendar.MINUTE));*/
     }
 
     private void getIntentData() {
-        if(getActivity().getIntent() != null && getActivity().getIntent().getExtras() != null){
-            time = (Calendar) getActivity().getIntent().getExtras().getSerializable("time");
+
+        if(getArguments() != null){
+            event = (Events) getArguments().getSerializable("editEvent");
+            addEvent.setVisibility(View.GONE);
+            updateEvent.setVisibility(View.VISIBLE);
+        }else if(getActivity().getIntent() != null && getActivity().getIntent().getExtras() != null){
+            event = (Events) getActivity().getIntent().getExtras().getSerializable("event");
+            addEvent.setVisibility(View.VISIBLE);
+            updateEvent.setVisibility(View.GONE);
         }
     }
 
     public interface OnAddEventClicked{
         void addEventClicked(Bundle bundle);
+    }
+
+    public interface OnUpdateEventClicked{
+        void updateEventClicked(Bundle bundle);
     }
 }

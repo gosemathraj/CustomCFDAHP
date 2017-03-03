@@ -60,9 +60,10 @@ public class RealmController {
         realm.commitTransaction();
     }
 
-    public RealmResults<Events> getAllAppointments(){
-        RealmResults<Events> events = realm.where(Events.class).findAll();
-        return events;
+    public void updateAppointment(Events event){
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(event);
+        realm.commitTransaction();
     }
 
     public void deleteAppointment(long id){
@@ -74,5 +75,10 @@ public class RealmController {
 
         results.deleteAllFromRealm();
         realm.commitTransaction();
+    }
+
+    public RealmResults<Events> getAllAppointments(){
+        RealmResults<Events> events = realm.where(Events.class).findAll();
+        return events;
     }
 }

@@ -29,6 +29,8 @@ import io.realm.RealmResults;
 
 import static android.R.attr.data;
 import static com.gosemathraj.customcalendar.R.id.delete;
+import static com.gosemathraj.customcalendar.R.id.end;
+import static com.gosemathraj.customcalendar.R.id.start;
 import static com.gosemathraj.customcalendar.R.id.startTime;
 
 public class MainActivity extends AppCompatActivity implements MonthLoader.MonthChangeListener,WeekView.EventClickListener,
@@ -206,8 +208,25 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     @Override
     public void onEmptyViewClicked(Calendar time) {
+
+        Events e = new Events();
+
+        e.setStartDay(time.get(Calendar.DAY_OF_MONTH));
+        e.setStartMonth(time.get(Calendar.MONTH));
+        e.setStartYear(time.get(Calendar.YEAR));
+        e.setStartHour(time.get(Calendar.HOUR_OF_DAY));
+        e.setStartMinute(time.get(Calendar.MINUTE));
+
+        e.setEndDay(time.get(Calendar.DAY_OF_MONTH));
+        e.setEndMonth(time.get(Calendar.MONTH));
+        e.setEndYear(time.get(Calendar.YEAR));
+        e.setEndHour(time.get(Calendar.HOUR_OF_DAY) + 1);
+        e.setEndMinute(time.get(Calendar.MINUTE));
+
+        e.setEventName("");
+
         Bundle bundle = new Bundle();
-        bundle.putSerializable("time",time);
+        bundle.putSerializable("event",e);
         bundle.putInt("fragmentId",1);
 
         Intent intent = new Intent(this,AddEventActivity.class);
@@ -220,42 +239,46 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
         if(requestCode == 1 &&  data != null){
             if(resultCode == 1){
-                Calendar startTime = (Calendar) data.getExtras().getSerializable("startCalendar");
-                Calendar endTime = (Calendar) data.getExtras().getSerializable("endCalendar");
-                String eventName = data.getExtras().getString("eventName");
 
-                WeekViewEvent newEvent = new WeekViewEvent(10,eventName,startTime,endTime);
-                if(eventName.split("--")[0].equals("Consultation")){
+                WeekViewEvent newEvent = new WeekViewEvent();
+                Events event = (Events) data.getExtras().getSerializable("addEvent");
+
+                Calendar startTime = Calendar.getInstance();
+                startTime.set(Calendar.DAY_OF_MONTH,event.getStartDay());
+                startTime.set(Calendar.MONTH,event.getStartMonth());
+                startTime.set(Calendar.YEAR,event.getStartYear());
+                startTime.set(Calendar.HOUR_OF_DAY,event.getStartHour());
+                startTime.set(Calendar.MINUTE,event.getStartMinute());
+
+                Calendar endTime = Calendar.getInstance();
+                endTime.set(Calendar.DAY_OF_MONTH,event.getEndDay());
+                endTime.set(Calendar.MONTH,event.getEndMonth());
+                endTime.set(Calendar.YEAR,event.getEndYear());
+                endTime.set(Calendar.HOUR_OF_DAY,event.getEndHour());
+                endTime.set(Calendar.MINUTE,event.getEndMinute());
+
+                int count = SharedPref.getInstance(this).getCount();
+                if(count == -1){
+                    event.setId(0);
+                }else{
+                    event.setId(count + 1);
+                }
+
+                newEvent.setId(event.getId());
+                newEvent.setStartTime(startTime);
+                newEvent.setEndTime(endTime);
+                newEvent.setName(event.getEventName());
+
+                if(event.getEventName().split("--")[0].equals("Consultation")){
                     newEvent.setColor(getResources().getColor(R.color.consultation_color));
                 }else{
                     newEvent.setColor(getResources().getColor(R.color.followup_color));
                 }
+
                 weekViewEvents.add(newEvent);
                 weekView.notifyDatasetChanged();
 
-                int count = SharedPref.getInstance(this).getCount();
-                Events events = new Events();
-                if(count == -1){
-                    events.setId(0);
-                }else{
-                    events.setId(count + 1);
-                }
-                events.setEventName(eventName);
-
-                events.setStartDay(startTime.get(Calendar.DAY_OF_MONTH));
-                events.setStartMonth(startTime.get(Calendar.MONTH));
-                events.setStartYear(startTime.get(Calendar.YEAR));
-                events.setStartHour(startTime.get(Calendar.HOUR_OF_DAY));
-                events.setStartMinute(startTime.get(Calendar.MINUTE));
-
-
-                events.setEndDay(endTime.get(Calendar.DAY_OF_MONTH));
-                events.setEndMonth(endTime.get(Calendar.MONTH));
-                events.setEndYear(endTime.get(Calendar.YEAR));
-                events.setEndHour(endTime.get(Calendar.HOUR_OF_DAY));
-                events.setEndMinute(endTime.get(Calendar.MINUTE));
-
-                RealmController.getInstance().addAppointment(events);
+                RealmController.getInstance().addAppointment(event);
                 SharedPref.getInstance(this).setCount(count + 1);
             }else if(resultCode == 2){
                 Events e = (Events) data.getExtras().getSerializable("deleteEvent");
@@ -267,6 +290,42 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
                 }
                 weekView.notifyDatasetChanged();
                 RealmController.getInstance().deleteAppointment(e.getId());
+            }else if(resultCode == 3){
+                Events e = (Events) data.getExtras().getSerializable("updateEvent");
+                for(int i = 0;i < weekViewEvents.size();i++){
+                    if(weekViewEvents.get(i).getId() == e.getId()){
+                        WeekViewEvent w = weekViewEvents.get(i);
+                        w.setId(e.getId());
+                        w.setName(e.getEventName());
+
+                        Calendar start = Calendar.getInstance();
+                        start .set(Calendar.DAY_OF_MONTH,e.getStartDay());
+                        start .set(Calendar.MONTH,e.getStartMonth());
+                        start .set(Calendar.YEAR,e.getStartYear());
+                        start .set(Calendar.HOUR_OF_DAY,e.getStartHour());
+                        start .set(Calendar.MINUTE,e.getStartMinute());
+
+                        Calendar end = Calendar.getInstance();
+                        end.set(Calendar.DAY_OF_MONTH,e.getEndDay());
+                        end.set(Calendar.MONTH,e.getEndMonth());
+                        end.set(Calendar.YEAR,e.getEndYear());
+                        end.set(Calendar.HOUR_OF_DAY,e.getEndHour());
+                        end.set(Calendar.MINUTE,e.getEndMinute());
+
+                        w.setStartTime(start);
+                        w.setEndTime(end);
+
+                        if(e.getEventName().split("--")[0].equals("Consultation")){
+                            w.setColor(getResources().getColor(R.color.consultation_color));
+                        }else{
+                            w.setColor(getResources().getColor(R.color.followup_color));
+                        }
+
+                        break;
+                    }
+                }
+                weekView.notifyDatasetChanged();
+                RealmController.getInstance().updateAppointment(e);
             }
         }
     }

@@ -13,7 +13,7 @@ import com.gosemathraj.customcalendar.fragments.EventDetailsFragment;
  * Created by RajeshG on 01-03-2017.
  */
 public class AddEventActivity extends AppCompatActivity implements AddEventFragment.OnAddEventClicked,
-        EventDetailsFragment.OnDeleteEventClicked{
+        EventDetailsFragment.OnDeleteEventClicked,AddEventFragment.OnUpdateEventClicked{
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +49,14 @@ public class AddEventActivity extends AppCompatActivity implements AddEventFragm
         Intent intent = new Intent(this,MainActivity.class);
         intent.putExtras(bundle);
         setResult(2,intent);
+        finish();
+    }
+
+    @Override
+    public void updateEventClicked(Bundle bundle) {
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.putExtras(bundle);
+        setResult(3,intent);
         finish();
     }
 }
