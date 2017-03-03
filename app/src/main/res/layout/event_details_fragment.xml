@@ -76,7 +76,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Start From"/>
+            android:text="From"/>
 
         <TextView
             android:id="@+id/startFrom"
@@ -97,7 +97,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="End Till"/>
+            android:text="To"/>
 
         <TextView
             android:id="@+id/endTill"

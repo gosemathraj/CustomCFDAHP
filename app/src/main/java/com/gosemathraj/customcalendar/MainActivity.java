@@ -1,6 +1,7 @@
 package com.gosemathraj.customcalendar;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.RectF;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.CalendarView;
 import android.widget.Toast;
 
 import com.alamkanak.weekview.MonthLoader;
@@ -376,7 +378,31 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
                     weekView.setEventTextSize((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10, getResources().getDisplayMetrics()));
                 }
                 return true;
+            case R.id.jump_to_date:
+                    showCalendarDialog();
+                    return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showCalendarDialog() {
+        CalendarView cal;
+        final Calendar jumpDate = Calendar.getInstance();
+        final Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.calendar_view);
+        cal = (CalendarView) dialog.findViewById(R.id.calendarView);
+
+        cal.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(CalendarView calendarView, int year, int month, int day) {
+                jumpDate.set(Calendar.YEAR,year);
+                jumpDate.set(Calendar.MONTH,month);
+                jumpDate.set(Calendar.DAY_OF_MONTH,day);
+
+                weekView.goToDate(jumpDate);
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 }

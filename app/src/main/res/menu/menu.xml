@@ -25,6 +25,11 @@
             android:orderInCategory="100"
             app:showAsAction="ifRoom"/>
 
+        <item android:id="@+id/jump_to_date"
+            android:title="@string/jump_to_date"
+            android:orderInCategory="100"
+            app:showAsAction="ifRoom"/>
+
     </group>
 
 </menu>

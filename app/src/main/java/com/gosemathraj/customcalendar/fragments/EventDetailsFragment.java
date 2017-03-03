@@ -13,6 +13,10 @@ import android.widget.TextView;
 import com.gosemathraj.customcalendar.R;
 import com.gosemathraj.customcalendar.model.Events;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -22,32 +26,18 @@ import butterknife.ButterKnife;
 
 public class EventDetailsFragment extends Fragment{
 
-    @BindView(R.id.appointmentType)
-    TextView appointmentType;
-
-    @BindView(R.id.patientName)
-    TextView patientName;
-
-    @BindView(R.id.patientEmail)
-    TextView patientEmail;
-
-    @BindView(R.id.patientMobile)
-    TextView patientMobile;
-
-    @BindView(R.id.startFrom)
-    TextView startFrom;
-
-    @BindView(R.id.endTill)
-    TextView endTill;
-
-    @BindView(R.id.delete)
-    TextView delete;
-
-    @BindView(R.id.edit)
-    TextView edit;
+    @BindView(R.id.appointmentType) TextView appointmentType;
+    @BindView(R.id.patientName) TextView patientName;
+    @BindView(R.id.patientEmail) TextView patientEmail;
+    @BindView(R.id.patientMobile) TextView patientMobile;
+    @BindView(R.id.startFrom) TextView startFrom;
+    @BindView(R.id.endTill) TextView endTill;
+    @BindView(R.id.delete) TextView delete;
+    @BindView(R.id.edit) TextView edit;
 
     private Events event;
     private OnDeleteEventClicked onDeleteEventClicked;
+    final SimpleDateFormat sdf = new SimpleDateFormat("d/MM/yyyy H:mm");
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -117,14 +107,20 @@ public class EventDetailsFragment extends Fragment{
         patientName.setText(event.getEventName().split("--")[1]);
         patientEmail.setText(event.getEventName().split("--")[2]);
         patientMobile.setText(event.getEventName().split("--")[3]);
-        startFrom.setText(
-                String.valueOf(event.getStartDay()) + "/" + String.valueOf(event.getStartMonth()) + "/" + String.valueOf(event.getStartYear()) +
-                        "  " + String.valueOf(event.getStartHour() + ":" + String.valueOf(event.getStartMinute()))
-        );
-        endTill.setText(
-                String.valueOf(event.getEndDay()) + "/" + String.valueOf(event.getEndMonth()) + "/" + String.valueOf(event.getEndYear()) +
-                        "  " + String.valueOf(event.getEndHour() + ":" + String.valueOf(event.getEndMinute()))
-        );
+
+        try {
+            Date d = sdf.parse(String.valueOf(event.getStartDay()) + "/" + String.valueOf(event.getStartMonth() + 1) + "/" + String.valueOf(event.getStartYear())
+            +" "+String.valueOf(event.getStartHour() + ":" + String.valueOf(event.getStartMinute())));
+
+            startFrom.setText(new SimpleDateFormat("E, d MMM, yyy  hh:mm aa").format(d).toString());
+
+            d = sdf.parse(String.valueOf(event.getEndDay()) + "/" + String.valueOf(event.getEndMonth() + 1) + "/" + String.valueOf(event.getEndYear())
+                    +" "+String.valueOf(event.getEndHour() + ":" + String.valueOf(event.getEndMinute())));
+
+            endTill.setText(new SimpleDateFormat("E, d MMM, yyy  hh:mm aa").format(d).toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
     }
 

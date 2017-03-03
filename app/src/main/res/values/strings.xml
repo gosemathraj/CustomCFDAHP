@@ -11,5 +11,6 @@
     <string name="async_error">Could not download events from the internet</string>
     <string name="action_month_view">Month</string>
     <string name="selectAppointmentType">Select Appointment Type</string>
+    <string name="jump_to_date">Jump To Date</string>
 
 </resources>
