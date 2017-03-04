@@ -16,5 +16,7 @@
     <string name="add_new_event">Add New Event</string>
     <string name="edit_event">Edit Event</string>
     <string name="delete_event">Delete Event</string>
+    <string name="save_event">SAVE</string>
+    <string name="add_event">ADD</string>
 
 </resources>

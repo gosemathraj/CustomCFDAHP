@@ -37,26 +37,17 @@ public class AddEventActivity extends AppCompatActivity implements AddEventFragm
     }
 
     @Override
-    public void addEventClicked(Bundle bundle) {
-        Intent intent = new Intent(this,MainActivity.class);
-        intent.putExtras(bundle);
-        setResult(1,intent);
+    public void addEventClicked() {
         finish();
     }
 
     @Override
-    public void deleteEventClicked(Bundle bundle) {
-        Intent intent = new Intent(this,MainActivity.class);
-        intent.putExtras(bundle);
-        setResult(2,intent);
+    public void deleteEventClicked() {
         finish();
     }
 
     @Override
-    public void updateEventClicked(Bundle bundle) {
-        Intent intent = new Intent(this,MainActivity.class);
-        intent.putExtras(bundle);
-        setResult(3,intent);
+    public void updateEventClicked() {
         finish();
     }
 }

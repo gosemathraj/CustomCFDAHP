@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/open_event"
-        android:title="@string/open_event"/>
+    <item android:id="@+id/save_event"
+        android:title="@string/save_event"
+        app:showAsAction="always"
+        android:visible="false"/>
 
     <item
-        android:id="@+id/add_new_event"
-        android:title="@string/add_new_event"/>
+        android:id="@+id/add_event"
+        android:title="@string/add_event"
+        app:showAsAction="always"
+        android:visible="false"/>
 
 </menu>

@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -18,7 +21,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.gosemathraj.customcalendar.R;
+import com.gosemathraj.customcalendar.Utility.SharedPref;
 import com.gosemathraj.customcalendar.model.Events;
+import com.gosemathraj.customcalendar.realm.RealmController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,14 +51,14 @@ public class AddEventFragment extends Fragment{
     @BindView(R.id.selectEndTime) TextView selectEndTime;
     @BindView(R.id.startTime) TextView startTime;
     @BindView(R.id.endTime) TextView endTime;
-    @BindView(R.id.addEvent) Button addEvent;
-    @BindView(R.id.updateEvent) Button updateEvent;
 
     private Events event;
     private String appointmentTypeString = null;
+    private int operationType;
 
     private OnAddEventClicked onAddEventClicked;
     private OnUpdateEventClicked onUpdateEventClicked;
+
     private ArrayAdapter<String> spinnerAdapter;
 
     final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
@@ -72,13 +77,76 @@ public class AddEventFragment extends Fragment{
         return view;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
     private void init() {
+
         onAddEventClicked = (OnAddEventClicked) getActivity();
         onUpdateEventClicked = (OnUpdateEventClicked) getActivity();
         getIntentData();
         initSpinnerData();
         setInitialData();
         setOnClickListeners();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.popup_menu,menu);
+
+        MenuItem add = menu.findItem(R.id.add_event);
+        MenuItem save = menu.findItem(R.id.save_event);
+
+        if(operationType == 1){
+            add.setVisible(true);
+            save.setVisible(false);
+        }else if(operationType == 2){
+            add.setVisible(false);
+            save.setVisible(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        switch(id){
+            case R.id.add_event :
+                event.setEventName(buildEventString());
+                addAppointmentToDb();
+                /*Bundle bundle = new Bundle();
+                bundle.putSerializable("addEvent",event);*/
+                onAddEventClicked.addEventClicked();
+                break;
+
+            case R.id.save_event :
+                event.setEventName(buildEventString());
+                saveAppointmentToDb();
+               /* Bundle bundle1 = new Bundle();
+                bundle1.putSerializable("updateEvent",event);*/
+                onUpdateEventClicked.updateEventClicked();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void saveAppointmentToDb() {
+        RealmController.getInstance().updateAppointment(event);
+    }
+
+    private void addAppointmentToDb() {
+        int count = SharedPref.getInstance(getActivity()).getCount();
+        if(count == -1){
+            event.setId(0);
+        }else{
+            event.setId(count + 1);
+        }
+        RealmController.getInstance().addAppointment(event);
+        SharedPref.getInstance(getActivity()).setCount(count + 1);
     }
 
     private void initSpinnerData() {
@@ -185,28 +253,6 @@ public class AddEventFragment extends Fragment{
                 timePickerDialog.show();
             }
         });
-
-        addEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                event.setEventName(buildEventString());
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("addEvent",event);
-                onAddEventClicked.addEventClicked(bundle);
-            }
-        });
-
-        updateEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                event.setEventName(buildEventString());
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("updateEvent",event);
-                onUpdateEventClicked.updateEventClicked(bundle);
-            }
-        });
     }
 
     private String buildEventString() {
@@ -250,21 +296,19 @@ public class AddEventFragment extends Fragment{
     private void getIntentData() {
 
         if(getArguments() != null){
-            event = (Events) getArguments().getSerializable("editEvent");
-            addEvent.setVisibility(View.GONE);
-            updateEvent.setVisibility(View.VISIBLE);
+            event = (Events) getArguments().getSerializable("event");
+            operationType = getArguments().getInt("operationType");
         }else if(getActivity().getIntent() != null && getActivity().getIntent().getExtras() != null){
             event = (Events) getActivity().getIntent().getExtras().getSerializable("event");
-            addEvent.setVisibility(View.VISIBLE);
-            updateEvent.setVisibility(View.GONE);
+            operationType = getActivity().getIntent().getExtras().getInt("operationType");
         }
     }
 
     public interface OnAddEventClicked{
-        void addEventClicked(Bundle bundle);
+        void addEventClicked();
     }
 
     public interface OnUpdateEventClicked{
-        void updateEventClicked(Bundle bundle);
+        void updateEventClicked();
     }
 }

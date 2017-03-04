@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.gosemathraj.customcalendar.R;
 import com.gosemathraj.customcalendar.model.Events;
+import com.gosemathraj.customcalendar.realm.RealmController;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,6 +23,7 @@ import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 /**
  * Created by RajeshG on 01-03-2017.
@@ -35,8 +37,6 @@ public class EventDetailsFragment extends Fragment{
     @BindView(R.id.patientMobile) TextView patientMobile;
     @BindView(R.id.startFrom) TextView startFrom;
     @BindView(R.id.endTill) TextView endTill;
-    @BindView(R.id.delete) TextView delete;
-    @BindView(R.id.edit) TextView edit;
 
     private Events event;
     private OnDeleteEventClicked onDeleteEventClicked;
@@ -60,30 +60,7 @@ public class EventDetailsFragment extends Fragment{
     private void init() {
         onDeleteEventClicked = (OnDeleteEventClicked) getActivity();
         getIntentData();
-        setOnClickListener();
         setData();
-    }
-
-    private void setOnClickListener() {
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDialog();
-            }
-        });
-
-        edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("editEvent",event);
-                AddEventFragment frag = new AddEventFragment();
-                frag.setArguments(bundle);
-
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.frame_base_container,frag).commit();
-            }
-        });
     }
 
     private void showDialog() {
@@ -92,9 +69,8 @@ public class EventDetailsFragment extends Fragment{
         builder.setMessage("Delete event ?");
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("deleteEvent",event);
-                onDeleteEventClicked.deleteEventClicked(bundle);
+                RealmController.getInstance().deleteAppointment(event.getId());
+                onDeleteEventClicked.deleteEventClicked();
             }
         });
         builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -135,7 +111,7 @@ public class EventDetailsFragment extends Fragment{
     }
 
     public interface OnDeleteEventClicked{
-        void deleteEventClicked(Bundle bundle);
+        void deleteEventClicked();
     }
 
     @Override
@@ -151,7 +127,8 @@ public class EventDetailsFragment extends Fragment{
         switch (id){
             case R.id.edit_event :
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("editEvent",event);
+                bundle.putSerializable("event",event);
+                bundle.putInt("operationType",2);
                 AddEventFragment frag = new AddEventFragment();
                 frag.setArguments(bundle);
 
@@ -166,7 +143,8 @@ public class EventDetailsFragment extends Fragment{
             case R.id.add_new_event :
                 event.setEventName("");
                 Bundle bundle1 = new Bundle();
-                bundle1.putSerializable("editEvent",event);
+                bundle1.putSerializable("event",event);
+                bundle1.putInt("operationType",1);
                 AddEventFragment frag1 = new AddEventFragment();
                 frag1.setArguments(bundle1);
 
