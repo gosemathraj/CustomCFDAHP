@@ -6,6 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -42,6 +45,7 @@ public class EventDetailsFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.event_details_fragment,container,false);
+        setHasOptionsMenu(true);
         ButterKnife.bind(this,view);
 
         try{
@@ -132,5 +136,44 @@ public class EventDetailsFragment extends Fragment{
 
     public interface OnDeleteEventClicked{
         void deleteEventClicked(Bundle bundle);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.events_menu,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        switch (id){
+            case R.id.edit_event :
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("editEvent",event);
+                AddEventFragment frag = new AddEventFragment();
+                frag.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frame_base_container,frag).commit();
+                break;
+
+            case R.id.delete_event :
+                showDialog();
+                break;
+
+            case R.id.add_new_event :
+                event.setEventName("");
+                Bundle bundle1 = new Bundle();
+                bundle1.putSerializable("editEvent",event);
+                AddEventFragment frag1 = new AddEventFragment();
+                frag1.setArguments(bundle1);
+
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frame_base_container,frag1).commit();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

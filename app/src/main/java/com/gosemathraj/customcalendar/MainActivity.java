@@ -1,6 +1,5 @@
 package com.gosemathraj.customcalendar;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.RectF;
@@ -9,10 +8,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CalendarView;
-import android.widget.Toast;
 
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
@@ -29,12 +27,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.RealmResults;
 
-import static android.R.attr.data;
-import static com.gosemathraj.customcalendar.R.id.delete;
-import static com.gosemathraj.customcalendar.R.id.end;
-import static com.gosemathraj.customcalendar.R.id.start;
-import static com.gosemathraj.customcalendar.R.id.startTime;
-
 public class MainActivity extends AppCompatActivity implements MonthLoader.MonthChangeListener,WeekView.EventClickListener,
         WeekView.EmptyViewClickListener{
 
@@ -46,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
     private static final int TYPE_WEEK_VIEW = 3;
     private int mWeekViewType = TYPE_THREE_DAY_VIEW;
 
-    private WeekViewEvent weekViewEvent;
     private List<WeekViewEvent> weekViewEvents;
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
@@ -65,62 +56,16 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     private void init() {
         weekViewEvents = new ArrayList<>();
-        setEventData();
         setListeners();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setEventData();
+    }
+
     private void setEventData() {
-        /*Calendar startTime = Calendar.getInstance();
-        startTime.set(Calendar.HOUR_OF_DAY,1);
-        startTime.set(Calendar.MINUTE,30);
-        startTime.set(Calendar.DAY_OF_MONTH,4);
-        startTime.set(Calendar.MONTH,2);
-        startTime.set(Calendar.YEAR,2017);
-
-        Calendar endTime = Calendar.getInstance();
-        endTime.set(Calendar.HOUR_OF_DAY,2);
-        endTime.set(Calendar.MINUTE,45);
-        endTime.set(Calendar.DAY_OF_MONTH,5);
-        endTime.set(Calendar.MONTH,2);
-        endTime.set(Calendar.YEAR,2017);
-
-        weekViewEvent = new WeekViewEvent(1,"New month Event Added",startTime,endTime);
-        weekViewEvents.add(weekViewEvent);
-
-        startTime = Calendar.getInstance();
-        startTime.set(Calendar.HOUR_OF_DAY,3);
-        startTime.set(Calendar.MINUTE,30);
-        startTime.set(Calendar.DAY_OF_MONTH,2);
-        startTime.set(Calendar.MONTH,4);
-        startTime.set(Calendar.YEAR,2017);
-
-        endTime = Calendar.getInstance();
-        endTime.set(Calendar.HOUR_OF_DAY,5);
-        endTime.set(Calendar.MINUTE,45);
-        endTime.set(Calendar.DAY_OF_MONTH,2);
-        endTime.set(Calendar.MONTH,4);
-        endTime.set(Calendar.YEAR,2017);
-
-        weekViewEvent = new WeekViewEvent(2,"Next month event added",startTime,endTime);
-        weekViewEvents.add(weekViewEvent);
-
-        startTime = Calendar.getInstance();
-        startTime.set(Calendar.HOUR_OF_DAY,3);
-        startTime.set(Calendar.MINUTE,30);
-        startTime.set(Calendar.DAY_OF_MONTH,2);
-        startTime.set(Calendar.MONTH,3);
-        startTime.set(Calendar.YEAR,2017);
-
-        endTime = Calendar.getInstance();
-        endTime.set(Calendar.HOUR_OF_DAY,5);
-        endTime.set(Calendar.MINUTE,45);
-        endTime.set(Calendar.DAY_OF_MONTH,2);
-        endTime.set(Calendar.MONTH,3);
-        endTime.set(Calendar.YEAR,2017);
-
-        weekViewEvent = new WeekViewEvent(2,"Next month event added",startTime,endTime);
-        weekViewEvents.add(weekViewEvent);*/
-
         RealmResults<Events> eventsList = RealmController.getInstance().getAllAppointments();
         for(int i = 0;i < eventsList.size();i++){
             WeekViewEvent we = new WeekViewEvent();
@@ -152,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
             weekViewEvents.add(we);
         }
+        weekView.notifyDatasetChanged();
     }
 
     private void setListeners() {
@@ -181,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
+
         Events e = new Events();
         e.setId(event.getId());
         e.setEventName(event.getName());
@@ -201,11 +148,9 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
         bundle.putSerializable("event",e);
         bundle.putInt("fragmentId",2);
 
-        Intent intent = new Intent(this,AddEventActivity.class);
+        Intent intent = new Intent(MainActivity.this,AddEventActivity.class);
         intent.putExtras(bundle);
         startActivityForResult(intent,1);
-
-        Toast.makeText(this,"Event Clicked" + event.getStartTime(),Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -340,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         int id = item.getItemId();
         switch(id){
             case R.id.action_today:

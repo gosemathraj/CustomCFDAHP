@@ -12,5 +12,9 @@
     <string name="action_month_view">Month</string>
     <string name="selectAppointmentType">Select Appointment Type</string>
     <string name="jump_to_date">Jump To Date</string>
+    <string name="open_event">Open Event</string>
+    <string name="add_new_event">Add New Event</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="delete_event">Delete Event</string>
 
 </resources>
