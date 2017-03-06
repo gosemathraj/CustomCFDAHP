@@ -8,12 +8,12 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.gosemathraj.customcalendar.fragments.AddEventFragment;
 import com.gosemathraj.customcalendar.fragments.EventDetailsFragment;
+import com.gosemathraj.customcalendar.interfaces.OnEventDone;
 
 /**
  * Created by RajeshG on 01-03-2017.
  */
-public class AddEventActivity extends AppCompatActivity implements AddEventFragment.OnAddEventClicked,
-        EventDetailsFragment.OnDeleteEventClicked,AddEventFragment.OnUpdateEventClicked{
+public class AddEventActivity extends AppCompatActivity implements OnEventDone {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,17 +37,7 @@ public class AddEventActivity extends AppCompatActivity implements AddEventFragm
     }
 
     @Override
-    public void addEventClicked() {
-        finish();
-    }
-
-    @Override
-    public void deleteEventClicked() {
-        finish();
-    }
-
-    @Override
-    public void updateEventClicked() {
+    public void eventDone() {
         finish();
     }
 }

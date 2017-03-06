@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.gosemathraj.customcalendar.R;
+import com.gosemathraj.customcalendar.interfaces.OnEventDone;
 import com.gosemathraj.customcalendar.model.Events;
 import com.gosemathraj.customcalendar.realm.RealmController;
 
@@ -39,7 +40,7 @@ public class EventDetailsFragment extends Fragment{
     @BindView(R.id.endTill) TextView endTill;
 
     private Events event;
-    private OnDeleteEventClicked onDeleteEventClicked;
+    private OnEventDone onEventDone;
     final SimpleDateFormat sdf = new SimpleDateFormat("d/MM/yyyy H:mm");
     @Nullable
     @Override
@@ -58,7 +59,7 @@ public class EventDetailsFragment extends Fragment{
     }
 
     private void init() {
-        onDeleteEventClicked = (OnDeleteEventClicked) getActivity();
+        onEventDone = (OnEventDone) getActivity();
         getIntentData();
         setData();
     }
@@ -70,7 +71,7 @@ public class EventDetailsFragment extends Fragment{
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 RealmController.getInstance().deleteAppointment(event.getId());
-                onDeleteEventClicked.deleteEventClicked();
+                onEventDone.eventDone();
             }
         });
         builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
@@ -108,10 +109,6 @@ public class EventDetailsFragment extends Fragment{
         if(getActivity().getIntent().getExtras() != null){
             event = (Events) getActivity().getIntent().getExtras().getSerializable("event");
         }
-    }
-
-    public interface OnDeleteEventClicked{
-        void deleteEventClicked();
     }
 
     @Override

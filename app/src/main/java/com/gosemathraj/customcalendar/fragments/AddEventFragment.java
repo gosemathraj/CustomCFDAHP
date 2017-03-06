@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -22,6 +21,7 @@ import android.widget.TimePicker;
 
 import com.gosemathraj.customcalendar.R;
 import com.gosemathraj.customcalendar.Utility.SharedPref;
+import com.gosemathraj.customcalendar.interfaces.OnEventDone;
 import com.gosemathraj.customcalendar.model.Events;
 import com.gosemathraj.customcalendar.realm.RealmController;
 
@@ -43,22 +43,20 @@ public class AddEventFragment extends Fragment{
     @BindView(R.id.patientName) EditText patientName;
     @BindView(R.id.patientContactNo) EditText patientContact;
     @BindView(R.id.patientEmail) EditText patientEmail;
-    @BindView(R.id.selectStartDate) TextView selectStartDate;
-    @BindView(R.id.selectEndDate) TextView selectEndDate;
     @BindView(R.id.startDate) TextView startDate;
     @BindView(R.id.endDate) TextView endDate;
-    @BindView(R.id.selectStartTime) TextView selectStartTime;
-    @BindView(R.id.selectEndTime) TextView selectEndTime;
     @BindView(R.id.startTime) TextView startTime;
     @BindView(R.id.endTime) TextView endTime;
+    @BindView(R.id.changeStartDate) TextView changeStartDate;
+    @BindView(R.id.changeEndDate) TextView changeEndDate;
+    @BindView(R.id.changeStartTime) TextView changeStartTime;
+    @BindView(R.id.changeEndTime) TextView changeEndTime;
 
     private Events event;
     private String appointmentTypeString = null;
     private int operationType;
 
-    private OnAddEventClicked onAddEventClicked;
-    private OnUpdateEventClicked onUpdateEventClicked;
-
+    private OnEventDone onEventDone;
     private ArrayAdapter<String> spinnerAdapter;
 
     final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
@@ -84,9 +82,7 @@ public class AddEventFragment extends Fragment{
     }
 
     private void init() {
-
-        onAddEventClicked = (OnAddEventClicked) getActivity();
-        onUpdateEventClicked = (OnUpdateEventClicked) getActivity();
+        onEventDone = (OnEventDone) getActivity();
         getIntentData();
         initSpinnerData();
         setInitialData();
@@ -118,17 +114,13 @@ public class AddEventFragment extends Fragment{
             case R.id.add_event :
                 event.setEventName(buildEventString());
                 addAppointmentToDb();
-                /*Bundle bundle = new Bundle();
-                bundle.putSerializable("addEvent",event);*/
-                onAddEventClicked.addEventClicked();
+                onEventDone.eventDone();
                 break;
 
             case R.id.save_event :
                 event.setEventName(buildEventString());
                 saveAppointmentToDb();
-               /* Bundle bundle1 = new Bundle();
-                bundle1.putSerializable("updateEvent",event);*/
-                onUpdateEventClicked.updateEventClicked();
+                onEventDone.eventDone();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -150,8 +142,9 @@ public class AddEventFragment extends Fragment{
     }
 
     private void initSpinnerData() {
-        spinnerAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_dropdown_item
+        spinnerAdapter = new ArrayAdapter<String>(getActivity(),android.R.layout.simple_spinner_item
                                                                         ,new String[]{"Consultation","Follow up"});
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         appointmentType.setAdapter(spinnerAdapter);
     }
 
@@ -168,7 +161,7 @@ public class AddEventFragment extends Fragment{
             }
         });
 
-        selectStartDate.setOnClickListener(new View.OnClickListener() {
+        changeStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
@@ -190,7 +183,7 @@ public class AddEventFragment extends Fragment{
             }
         });
 
-        selectEndDate.setOnClickListener(new View.OnClickListener() {
+        changeEndDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
@@ -212,7 +205,7 @@ public class AddEventFragment extends Fragment{
             }
         });
 
-        selectStartTime.setOnClickListener(new View.OnClickListener() {
+        changeStartTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
@@ -233,7 +226,7 @@ public class AddEventFragment extends Fragment{
             }
         });
 
-        selectEndTime.setOnClickListener(new View.OnClickListener() {
+        changeEndTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
@@ -302,13 +295,5 @@ public class AddEventFragment extends Fragment{
             event = (Events) getActivity().getIntent().getExtras().getSerializable("event");
             operationType = getActivity().getIntent().getExtras().getInt("operationType");
         }
-    }
-
-    public interface OnAddEventClicked{
-        void addEventClicked();
-    }
-
-    public interface OnUpdateEventClicked{
-        void updateEventClicked();
     }
 }
