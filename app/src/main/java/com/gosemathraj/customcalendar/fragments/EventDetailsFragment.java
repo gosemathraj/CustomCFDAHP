@@ -16,7 +16,7 @@ import android.widget.TextView;
 import com.gosemathraj.customcalendar.R;
 import com.gosemathraj.customcalendar.interfaces.OnEventDone;
 import com.gosemathraj.customcalendar.model.Events;
-import com.gosemathraj.customcalendar.realm.RealmController;
+import com.gosemathraj.customcalendar.data.DbHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,6 +41,7 @@ public class EventDetailsFragment extends Fragment{
 
     private Events event;
     private OnEventDone onEventDone;
+    private DbHelper dbHelper;
     final SimpleDateFormat sdf = new SimpleDateFormat("d/MM/yyyy H:mm");
     @Nullable
     @Override
@@ -60,6 +61,7 @@ public class EventDetailsFragment extends Fragment{
 
     private void init() {
         onEventDone = (OnEventDone) getActivity();
+        dbHelper = new DbHelper(getActivity());
         getIntentData();
         setData();
     }
@@ -70,7 +72,7 @@ public class EventDetailsFragment extends Fragment{
         builder.setMessage("Delete event ?");
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                RealmController.getInstance().deleteAppointment(event.getId());
+                dbHelper.deleteAppointment(event.getId());
                 onEventDone.eventDone();
             }
         });

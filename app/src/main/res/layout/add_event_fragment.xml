@@ -104,11 +104,11 @@
                 android:text="01/03/2017"/>
 
             <TextView
-                android:id="@+id/changeEndDate"
+                android:id="@+id/changeStartDate"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="change date"
+                android:text="Change"
                 android:textColor="#e53935"
                 android:layout_marginLeft="4dp"/>
 
@@ -143,11 +143,11 @@
                 android:text="01/03/2017"/>
 
             <TextView
-                android:id="@+id/changeStartDate"
+                android:id="@+id/changeEndDate"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="change date"
+                android:text="Change"
                 android:textColor="#e53935"
                 android:layout_marginLeft="4dp"/>
 
@@ -186,7 +186,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="change time"
+                android:text="Change"
                 android:textColor="#e53935"
                 android:layout_marginLeft="4dp"/>
 
@@ -225,7 +225,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="change time"
+                android:text="Change"
                 android:textColor="#e53935"
                 android:layout_marginLeft="4dp"/>
 

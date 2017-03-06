@@ -20,10 +20,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.gosemathraj.customcalendar.R;
-import com.gosemathraj.customcalendar.Utility.SharedPref;
 import com.gosemathraj.customcalendar.interfaces.OnEventDone;
 import com.gosemathraj.customcalendar.model.Events;
-import com.gosemathraj.customcalendar.realm.RealmController;
+import com.gosemathraj.customcalendar.data.DbHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,6 +57,7 @@ public class AddEventFragment extends Fragment{
 
     private OnEventDone onEventDone;
     private ArrayAdapter<String> spinnerAdapter;
+    private DbHelper dbHelper;
 
     final SimpleDateFormat sdf = new SimpleDateFormat("H:mm");
     final SimpleDateFormat dateSdf = new SimpleDateFormat("d/MM/yyyy");
@@ -83,6 +83,7 @@ public class AddEventFragment extends Fragment{
 
     private void init() {
         onEventDone = (OnEventDone) getActivity();
+        dbHelper = new DbHelper(getActivity());
         getIntentData();
         initSpinnerData();
         setInitialData();
@@ -127,18 +128,11 @@ public class AddEventFragment extends Fragment{
     }
 
     private void saveAppointmentToDb() {
-        RealmController.getInstance().updateAppointment(event);
+        dbHelper.updateAppointment(event);
     }
 
     private void addAppointmentToDb() {
-        int count = SharedPref.getInstance(getActivity()).getCount();
-        if(count == -1){
-            event.setId(0);
-        }else{
-            event.setId(count + 1);
-        }
-        RealmController.getInstance().addAppointment(event);
-        SharedPref.getInstance(getActivity()).setCount(count + 1);
+        dbHelper.addAppointment(event);
     }
 
     private void initSpinnerData() {
@@ -194,7 +188,7 @@ public class AddEventFragment extends Fragment{
                         event.setEndYear(year);
 
                         try {
-                            Date d = dateSdf.parse(String.valueOf(event.getStartDay()) + "/" + String.valueOf(event.getStartMonth() + 1) + "/" + String.valueOf(event.getStartYear()));
+                            Date d = dateSdf.parse(String.valueOf(event.getEndDay()) + "/" + String.valueOf(event.getEndMonth() + 1) + "/" + String.valueOf(event.getEndYear()));
                             endDate.setText(new SimpleDateFormat("E, d MMM, yyy").format(d).toString());
                         } catch (ParseException e) {
                             e.printStackTrace();

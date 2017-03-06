@@ -9,15 +9,13 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.CalendarView;
 
 import com.alamkanak.weekview.MonthLoader;
 import com.alamkanak.weekview.WeekView;
 import com.alamkanak.weekview.WeekViewEvent;
-import com.gosemathraj.customcalendar.Utility.SharedPref;
 import com.gosemathraj.customcalendar.model.Events;
-import com.gosemathraj.customcalendar.realm.RealmController;
+import com.gosemathraj.customcalendar.data.DbHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,7 +23,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import io.realm.RealmResults;
 
 public class MainActivity extends AppCompatActivity implements MonthLoader.MonthChangeListener,WeekView.EventClickListener,
         WeekView.EmptyViewClickListener{
@@ -39,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
     private int mWeekViewType = TYPE_THREE_DAY_VIEW;
 
     private List<WeekViewEvent> weekViewEvents;
+    private DbHelper dbHelper;
 
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     @Override
@@ -56,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     private void init() {
         weekViewEvents = new ArrayList<>();
+        dbHelper = new DbHelper(this);
         //setEventData();
         setListeners();
     }
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements MonthLoader.Month
 
     private void setEventData() {
         weekViewEvents.clear();
-        RealmResults<Events> eventsList = RealmController.getInstance().getAllAppointments();
+        List<Events> eventsList = dbHelper.getAllAppointments();
         for(int i = 0;i < eventsList.size();i++){
             WeekViewEvent we = new WeekViewEvent();
             we.setId(eventsList.get(i).getId());
