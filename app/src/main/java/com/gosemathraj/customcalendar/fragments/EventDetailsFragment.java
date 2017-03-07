@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.gosemathraj.customcalendar.R;
@@ -38,6 +39,9 @@ public class EventDetailsFragment extends Fragment{
     @BindView(R.id.patientMobile) TextView patientMobile;
     @BindView(R.id.startFrom) TextView startFrom;
     @BindView(R.id.endTill) TextView endTill;
+    @BindView(R.id.linearDelete) LinearLayout delete;
+    @BindView(R.id.linearAddNew) LinearLayout addNew;
+    @BindView(R.id.linearEdit) LinearLayout edit;
 
     private Events event;
     private OnEventDone onEventDone;
@@ -64,6 +68,45 @@ public class EventDetailsFragment extends Fragment{
         dbHelper = new DbHelper(getActivity());
         getIntentData();
         setData();
+        setOnClickListeners();
+    }
+
+    private void setOnClickListeners() {
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog();
+            }
+        });
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("event",event);
+                bundle.putInt("operationType",2);
+                AddEventFragment frag = new AddEventFragment();
+                frag.setArguments(bundle);
+
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frame_base_container,frag).commit();
+            }
+        });
+
+        addNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                event.setEventName("");
+                Bundle bundle1 = new Bundle();
+                bundle1.putSerializable("event",event);
+                bundle1.putInt("operationType",1);
+                AddEventFragment frag1 = new AddEventFragment();
+                frag1.setArguments(bundle1);
+
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.frame_base_container,frag1).commit();
+            }
+        });
     }
 
     private void showDialog() {
@@ -90,6 +133,7 @@ public class EventDetailsFragment extends Fragment{
         patientName.setText(event.getEventName().split("--")[1]);
         patientEmail.setText(event.getEventName().split("--")[2]);
         patientMobile.setText(event.getEventName().split("--")[3]);
+
 
         try {
             Date d = sdf.parse(String.valueOf(event.getStartDay()) + "/" + String.valueOf(event.getStartMonth() + 1) + "/" + String.valueOf(event.getStartYear())

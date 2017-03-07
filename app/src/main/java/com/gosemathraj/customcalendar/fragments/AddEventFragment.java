@@ -2,9 +2,11 @@ package com.gosemathraj.customcalendar.fragments;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -52,6 +54,7 @@ public class AddEventFragment extends Fragment{
     @BindView(R.id.changeEndTime) TextView changeEndTime;
 
     private Events event;
+    private String nullValue = null;
     private String appointmentTypeString = null;
     private int operationType;
 
@@ -113,18 +116,59 @@ public class AddEventFragment extends Fragment{
         int id = item.getItemId();
         switch(id){
             case R.id.add_event :
-                event.setEventName(buildEventString());
-                addAppointmentToDb();
-                onEventDone.eventDone();
+                if (checkForNull()) {
+                    event.setEventName(buildEventString());
+                    addAppointmentToDb();
+                    onEventDone.eventDone();
+                }else{
+                    showDialog();
+                }
                 break;
 
             case R.id.save_event :
+                if (checkForNull()) {
+                    event.setEventName(buildEventString());
+                    saveAppointmentToDb();
+                    onEventDone.eventDone();
+                }else{
+                    showDialog();
+                }
                 event.setEventName(buildEventString());
-                saveAppointmentToDb();
-                onEventDone.eventDone();
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showDialog() {
+        AlertDialog dialog;
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("Please enter valid " +nullValue);
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+
+                dialog.dismiss();
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    private boolean checkForNull() {
+        if(patientName.getText().toString().length() <= 0 || patientName.getText().toString() == null){
+            nullValue = "Patient name";
+            return false;
+        }
+
+        if(patientContact.getText().toString().length() <= 0 || patientContact.getText().toString() == null){
+            nullValue = "Patient mobile no";
+            return false;
+        }
+
+        if(patientEmail.getText().toString().length() <= 0 || patientEmail.getText().toString() == null){
+            nullValue = "Patient email";
+            return false;
+        }
+        return true;
     }
 
     private void saveAppointmentToDb() {
